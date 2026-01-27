@@ -103,13 +103,20 @@ function saveFormData(data) {
     // ⚠️ ZMEŇ TÚTO URL NA SVOJU Z GOOGLE APPS SCRIPT DEPLOYMENT
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwlEKpeOf_0uk2IgtL9S-YKWK85yJi6tFJUWJTOaF2lBRAUCg2Y6IZNCtLfEKTinq8/exec";
     
-    // Odoslanie údajov
+    // Vytvorenie FormData (nie JSON!) - toto obchádza CORS!
+    const formData = new FormData();
+    formData.append('name', data.name);
+    formData.append('transport', data.transport);
+    formData.append('allergies', data.allergies);
+    formData.append('alcohol', data.alcohol.join(', ')); // Prevod array na string
+    formData.append('message', data.message);
+    formData.append('timestamp', data.timestamp);
+    formData.append('weddingRSVP', 'true'); // Identifikátor pre Apps Script
+    
+    // Odoslanie údajov ako FormData (bez CORS problémov!)
     fetch(APPS_SCRIPT_URL, {
         method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-            'Content-Type': 'application/json'
-        }
+        body: formData
     })
     .then(response => response.json())
     .then(result => {
