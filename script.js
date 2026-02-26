@@ -143,30 +143,50 @@ function validateFormData(formData) {
 }
 
 /**
- * Uloženie údajov formuláru
+ * Uloženie údajov do Google Apps Script a Google Sheets
  * @param {Object} formData - Zbierané údaje
  */
 function saveFormData(formData) {
-    // Uloženie do localStorage
-    const responses = JSON.parse(localStorage.getItem('questionnaire_responses') || '[]');
-    const timestamp = new Date().toLocaleString('sk-SK');
+    // ⚠️ ZMEŇ TÚTO URL NA SVOJU Z GOOGLE APPS SCRIPT DEPLOYMENT
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwlEKpeOf_0uk2IgtL9S-YKWK85yJi6tFJUWJTOaF2lBRAUCg2Y6IZNCtLfEKTinq8/exec";
     
-    const response = {
-        timestamp,
-        ...formData
-    };
+    // Vytvorenie FormData (nie JSON!) - toto obchádza CORS!
+    const formDataToSend = new FormData();
+    formDataToSend.append('names', formData.names);
+    formDataToSend.append('transport', formData.transport);
+    formDataToSend.append('diet', formData.diet);
+    if (formData.dietOther) {
+        formDataToSend.append('dietOther', formData.dietOther);
+    }
+    formDataToSend.append('alcohol', formData.alcohol);
+    if (formData.alcoholOther) {
+        formDataToSend.append('alcoholOther', formData.alcoholOther);
+    }
+    formDataToSend.append('bonus', formData.bonus);
+    formDataToSend.append('timestamp', new Date().toLocaleString('sk-SK'));
+    formDataToSend.append('weddingRSVP', 'true');
     
-    responses.push(response);
-    localStorage.setItem('questionnaire_responses', JSON.stringify(responses));
-    
-    console.log('Dotazník uložený:', response);
+    // Odoslanie údajov ako FormData (bez CORS problémov!)
+    fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        body: formDataToSend
+    })
+    .then(response => response.json())
+    .then(result => {
+        console.log('✓ Údaje boli odoslané a uložené!', result);
+    })
+    .catch(error => {
+        console.error('✗ Chyba pri odosielaní:', error);
+        showErrorMessage('Chyba pri odosielaní. Prosím, skúste neskôr.');
+    });
 }
 
 /**
  * Zobrazenie správy o úspechu
  */
 function displaySuccessMessage() {
-    const container = document.querySelector('.questionnaire-section');
+    const form = document.getElementById('rsvpForm');
+    const container = form.parentElement;
     
     const successDiv = document.createElement('div');
     successDiv.className = 'success-message';
@@ -176,14 +196,10 @@ function displaySuccessMessage() {
     `;
     
     // Vloženie správy za formulár
-    const form = document.getElementById('rsvpForm');
     form.parentNode.insertBefore(successDiv, form.nextSibling);
     
-    // Automatické skrytie
-    setTimeout(function() {
-        successDiv.style.opacity = '0';
-        successDiv.style.transition = 'opacity 0.5s ease';
-    }, 2000);
+    // Skrytie formuláru
+    form.style.display = 'none';
 }
 
 /**
@@ -191,5 +207,34 @@ function displaySuccessMessage() {
  * @param {string} message - Chybová správa
  */
 function showErrorMessage(message) {
-    alert(message);
+    // Získanie formuláru a vytvorenie chybovej správy
+    const form = document.getElementById('rsvpForm');
+    
+    // Odstránenie starej chybovej správy ak existuje
+    const oldError = form.querySelector('.error-message');
+    if (oldError) {
+        oldError.remove();
+    }
+    
+    // Vytvorenie novej chybovej správy
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.textContent = '✗ ' + message;
+    errorDiv.style.cssText = `
+        background-color: #ffebee;
+        border: 1px solid #ef5350;
+        border-radius: 5px;
+        padding: 15px;
+        color: #c62828;
+        margin-bottom: 20px;
+        font-weight: 500;
+    `;
+    
+    // Vloženie chybovej správy na začiatok formuláru
+    form.insertBefore(errorDiv, form.firstChild);
+    
+    // Automatické skrytie po 4 sekundách
+    setTimeout(function() {
+        errorDiv.remove();
+    }, 4000);
 }
