@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nikoleta & Matúš - Svadobné oznámenie</title>
+    <title>Nikoleta & Matúš - Dotazník</title>
     
     <!-- Importy fontov -->
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Lora:wght@400;600&family=Raleway:wght@300;400;600&display=swap" rel="stylesheet">
@@ -13,110 +13,135 @@
 <body>
     <div class="container">
         
-        <!-- ÚVODNÝ ODDIEL -->
-        <section class="opening">
-            <p class="opening-quote">Láska nás spojila, smiech nás drží.</p>
+        <!-- TITULNÁ FOTKA -->
+        <section class="hero">
+            <img src="tytulna.jpg" alt="Nikoleta & Matúš" class="hero-image">
         </section>
 
-        <!-- MENÁ SNÚBENCOV -->
-        <section class="names">
-            <h1 class="groom-name">Nikoleta Čapkovičová</h1>
-            <div class="ampersand">&</div>
-            <h1 class="bride-name">Matúš Hajiček</h1>
+        <!-- ÚVODNÝ TEXT -->
+        <section class="intro-text">
+            <p class="intro-greeting"><strong>Milí naší,</strong></p>
+            <p>veľmi sa tešíme, že tento pre nás výnimočný deň budeme môcť prežiť práve s vami. Aby sme sa na váš príchod vedeli pripraviť čo najlepšie (a aby mal každý plný tanier aj pohár 😉), prosíme vás o pár odpovedí v krátkom dotazníku nižšie.</p>
+            <p>Zaberie vám to len chvíľku a nám to veľmi pomôže.</p>
         </section>
 
-        <!-- OZNAMOVACÍ TEXT -->
-        <section class="announcement">
-            <p>Vďační Bohu za dar lásky s veľkou radosťou oznamujeme, že sa staneme manželmi.</p>
-        </section>
-
-        <!-- DÁTUM A MIESTO -->
-        <section class="details">
-            <div class="detail-item">
-                <h3>Dátum a čas</h3>
-                <p>8. augusta 2026<br>o 15:00</p>
-            </div>
-            <div class="detail-item">
-                <h3>Miesto</h3>
-                <p>Kostol Panny Márie Pomocnice Kresťanov<br>Trnava</p>
-            </div>
-        </section>
-
-        <!-- RSVP FORMULÁR -->
-        <section class="rsvp-section">
-            <h2>Potvrdiť účasť</h2>
+        <!-- DOTAZNÍK -->
+        <section class="questionnaire-section">
             
+            <!-- 1. MENÁ -->
+            <div class="form-group">
+                <h3 class="form-title">👨‍👩‍👧‍👦 Mená</h3>
+                <p class="form-subtitle">Za koho tento dotazník vypĺňate?</p>
+                <input type="text" class="form-input" placeholder="Napíšte mená..." required>
+            </div>
+
+            <!-- 2. ODVOZ -->
+            <div class="form-group">
+                <h3 class="form-title">🚗 Odvoz</h3>
+                <p class="form-subtitle">Budete potrebovať zabezpečiť odvoz na miesto hostiny?</p>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="transport" value="yes">
+                        <span>Áno</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="transport" value="no">
+                        <span>Nie</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 3. JEDLO -->
+            <div class="form-group">
+                <h3 class="form-title">🍽️ Jedlo</h3>
+                <p class="form-subtitle">Máte nejaké špeciálne požiadavky na stravu?</p>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="diet" value="none">
+                        <span>Bez obmedzení</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="diet" value="vegetarian">
+                        <span>Vegetariánska strava</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="diet" value="gluten-free">
+                        <span>Bezlepková strava</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="diet" value="lactose-free">
+                        <span>Bezlaktózová strava</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="diet" value="other">
+                        <span>Iné:</span>
+                    </label>
+                    <input type="text" class="form-input diet-other" placeholder="Špecifikujte prosím..." style="display: none;">
+                </div>
+            </div>
+
+            <!-- 4. ALKOHOL -->
+            <div class="form-group">
+                <h3 class="form-title">🥂 Alkohol</h3>
+                <p class="form-subtitle">Aký typ alkoholu preferujete?</p>
+                <div class="checkbox-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="alcohol" value="wine">
+                        <span>Víno</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="alcohol" value="beer">
+                        <span>Pivo</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="alcohol" value="cocktails">
+                        <span>Miešané drinky</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="alcohol" value="spirits">
+                        <span>Tvrdý alkohol</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="alcohol" value="non-alcoholic">
+                        <span>Nepijem alkohol</span>
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="alcohol" value="other">
+                        <span>Iné:</span>
+                    </label>
+                    <input type="text" class="form-input alcohol-other" placeholder="Špecifikujte prosím..." style="display: none;">
+                </div>
+            </div>
+
+            <!-- 5. BONUS -->
+            <div class="form-group">
+                <h3 class="form-title">✍️ Bonus</h3>
+                <p class="form-subtitle">Je ešte niečo, čo by sme o vás mali vedieť alebo čo by ste nám chceli odkázať?</p>
+                <textarea class="form-textarea" placeholder="Napíšte vašu správu..." rows="4"></textarea>
+            </div>
+
+            <!-- INFO SEKCIA -->
+            <section class="info-section">
+                <div class="info-card">
+                    <p><strong>🌸 Kvety sú krásne, avšak dlho nevydržia.</strong> Ale spoločné spomienky áno! Preto prosíme, aby ste kvietky nenosili a radšej si s nami naplno užili tento krásny deň.</p>
+                </div>
+                <div class="info-card">
+                    <p><strong>👟 Na hostine bude možné odpočinúť si aj vonku,</strong> takže odporúčame zbaliť si obuv, ktorá si rozumie s trávou (a vydrží aj tanečné tempo).</p>
+                </div>
+            </section>
+
+            <!-- ZÁVER -->
+            <section class="conclusion">
+                <p>Ďakujeme za vyplnenie!</p>
+                <p>Už sa na vás veľmi tešíme🤍</p>
+                <p class="signature"><strong>Nikoleta a Matúš</strong></p>
+            </section>
+
+            <!-- TLAČIDLO ODOSLANIA -->
             <form id="rsvpForm" class="rsvp-form">
-                
-                <!-- Meno a priezvisko -->
-                <div class="form-group">
-                    <label for="name">Meno a priezvisko *</label>
-                    <input type="text" id="name" name="name" placeholder="Napr. Ján Varga" required>
-                </div>
-
-                <!-- Doprava -->
-                <div class="form-group">
-                    <label>Doprava na hostinu *</label>
-                    <div class="radio-group">
-                        <label class="radio-label">
-                            <input type="radio" name="transport" value="zajazd" required>
-                            <span>Mám záujem o zabezpečený odvoz</span>
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="transport" value="auto" required>
-                            <span>Prídem vlastným autom</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Alergeny -->
-                <div class="form-group">
-                    <label for="allergies">Potravinové intolerancie / alergie</label>
-                    <textarea id="allergies" name="allergies" placeholder="Napíš, ak máš alergie alebo intolerancie..." rows="3"></textarea>
-                </div>
-
-                <!-- Alkohol -->
-                <div class="form-group">
-                    <label>Preferovaný typ alkoholu</label>
-                    <div class="checkbox-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="alcohol" value="wine">
-                            <span>Víno</span>
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="alcohol" value="beer">
-                            <span>Pivo</span>
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="alcohol" value="spirits">
-                            <span>Tvrdý alkohol</span>
-                        </label>
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="alcohol" value="nonalcoholic">
-                            <span>Nealko</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Poznámka -->
-                <div class="form-group">
-                    <label for="message">Poznámka pre mladomanželov</label>
-                    <textarea id="message" name="message" placeholder="Priamo z tvojho srdca..." rows="4"></textarea>
-                </div>
-
-                <!-- Tlačidlo -->
-                <button type="submit" class="submit-btn">Odoslať potvrdenie</button>
+                <button type="submit" class="submit-btn">Odoslať dotazník</button>
             </form>
 
-            <div id="successMessage" class="success-message" style="display: none;">
-                <p>✓ Ďakujeme za potvrdenie! Veľmi sa tešíme na vašu účasť.</p>
-            </div>
-        </section>
-
-        <!-- ZÁVEREČNÉ INFORMÁCIE -->
-        <section class="footer-notes">
-            <p class="note">🌸 Kvietky si, prosím, nenoste.</p>
-            <p class="note">👠 Na večer si nezabudnite pohodlnú obuv 😊</p>
         </section>
 
     </div>

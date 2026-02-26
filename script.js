@@ -1,10 +1,11 @@
 /* ============================================
-   SVADOBNÁ STRÁNKA - JAVASCRIPT
+   SVADOBNÝ DOTAZNÍK - JAVASCRIPT
    Logika formuláru a interakcie
    ============================================ */
 
 document.addEventListener('DOMContentLoaded', function() {
     initializeForm();
+    setupDynamicInputs();
 });
 
 /**
@@ -15,6 +16,31 @@ function initializeForm() {
     
     if (form) {
         form.addEventListener('submit', handleFormSubmit);
+    }
+}
+
+/**
+ * Nastavenie dynamických vstupov (zobrazenie/skrytie)
+ */
+function setupDynamicInputs() {
+    // Zobrazenie iného inputu pre dietu
+    const dietOtherCheckbox = document.querySelector('input[name="diet"][value="other"]');
+    const dietOtherInput = document.querySelector('.diet-other');
+    
+    if (dietOtherCheckbox && dietOtherInput) {
+        dietOtherCheckbox.addEventListener('change', function() {
+            dietOtherInput.style.display = this.checked ? 'block' : 'none';
+        });
+    }
+    
+    // Zobrazenie iného inputu pre alkohol
+    const alcoholOtherCheckbox = document.querySelector('input[name="alcohol"][value="other"]');
+    const alcoholOtherInput = document.querySelector('.alcohol-other');
+    
+    if (alcoholOtherCheckbox && alcoholOtherInput) {
+        alcoholOtherCheckbox.addEventListener('change', function() {
+            alcoholOtherInput.style.display = this.checked ? 'block' : 'none';
+        });
     }
 }
 
@@ -34,7 +60,7 @@ function handleFormSubmit(event) {
         return;
     }
     
-    // Uloženie údajov (v reálnej aplikácii by sa tu poslali na server)
+    // Uloženie údajov
     saveFormData(formData);
     
     // Zobrazenie správy o úspechu
@@ -46,49 +72,70 @@ function handleFormSubmit(event) {
     // Skrytie formuláru po chvíli
     setTimeout(function() {
         document.getElementById('rsvpForm').style.display = 'none';
-    }, 2000);
+    }, 3000);
 }
 
 /**
  * Zbieranie údajov z formuláru
- * @returns {Object} Objekt s údajmi z formuláru
+ * @returns {Object} Zbierané údaje formuláru
  */
 function collectFormData() {
-    const form = document.getElementById('rsvpForm');
+    const formData = {};
     
-    const name = document.getElementById('name').value.trim();
-    const transport = document.querySelector('input[name="transport"]:checked')?.value || '';
-    const allergies = document.getElementById('allergies').value.trim();
+    // Zber mien
+    const namesInput = document.querySelector('input[placeholder="Napíšte mená..."]');
+    formData.names = namesInput ? namesInput.value.trim() : '';
     
-    // Zbieranie vybraných alkoholických nápojov
-    const alcoholCheckboxes = document.querySelectorAll('input[name="alcohol"]:checked');
-    const alcohol = Array.from(alcoholCheckboxes).map(cb => cb.value);
+    // Zber transportu
+    const transportCheckboxes = document.querySelectorAll('input[name="transport"]');
+    formData.transport = Array.from(transportCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value)
+        .join(', ') || 'Neuvedené';
     
-    const message = document.getElementById('message').value.trim();
+    // Zber diety
+    const dietCheckboxes = document.querySelectorAll('input[name="diet"]');
+    formData.diet = Array.from(dietCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value)
+        .join(', ') || 'Bez obmedzení';
     
-    return {
-        name: name,
-        transport: transport,
-        allergies: allergies,
-        alcohol: alcohol,
-        message: message,
-        timestamp: new Date().toLocaleString('sk-SK')
-    };
+    if (document.querySelector('.diet-other').style.display !== 'none') {
+        const dietOtherValue = document.querySelector('.diet-other').value.trim();
+        if (dietOtherValue) {
+            formData.dietOther = dietOtherValue;
+        }
+    }
+    
+    // Zber alkoholu
+    const alcoholCheckboxes = document.querySelectorAll('input[name="alcohol"]');
+    formData.alcohol = Array.from(alcoholCheckboxes)
+        .filter(cb => cb.checked)
+        .map(cb => cb.value)
+        .join(', ') || 'Neuvedené';
+    
+    if (document.querySelector('.alcohol-other').style.display !== 'none') {
+        const alcoholOtherValue = document.querySelector('.alcohol-other').value.trim();
+        if (alcoholOtherValue) {
+            formData.alcoholOther = alcoholOtherValue;
+        }
+    }
+    
+    // Zber bonusu
+    const bonusTextarea = document.querySelector('textarea[placeholder="Napíšte vašu správu..."]');
+    formData.bonus = bonusTextarea ? bonusTextarea.value.trim() : '';
+    
+    return formData;
 }
 
 /**
  * Validácia údajov formuláru
- * @param {Object} data - Údaje na validáciu
- * @returns {boolean} True ak sú údaje platné
+ * @param {Object} formData - Zbierané údaje
+ * @returns {boolean} Platnosť dát
  */
-function validateFormData(data) {
-    // Kontrola povinného mena
-    if (!data.name || data.name.length < 3) {
-        return false;
-    }
-    
-    // Kontrola povinnej dopravy
-    if (!data.transport) {
+function validateFormData(formData) {
+    // Kontrola mien
+    if (!formData.names || formData.names.length < 2) {
         return false;
     }
     
@@ -96,98 +143,53 @@ function validateFormData(data) {
 }
 
 /**
- * Uloženie údajov do Google Apps Script a Google Sheets
- * @param {Object} data - Údaje na uloženie
+ * Uloženie údajov formuláru
+ * @param {Object} formData - Zbierané údaje
  */
-function saveFormData(data) {
-    // ⚠️ ZMEŇ TÚTO URL NA SVOJU Z GOOGLE APPS SCRIPT DEPLOYMENT
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwlEKpeOf_0uk2IgtL9S-YKWK85yJi6tFJUWJTOaF2lBRAUCg2Y6IZNCtLfEKTinq8/exec";
+function saveFormData(formData) {
+    // Uloženie do localStorage
+    const responses = JSON.parse(localStorage.getItem('questionnaire_responses') || '[]');
+    const timestamp = new Date().toLocaleString('sk-SK');
     
-    // Vytvorenie FormData (nie JSON!) - toto obchádza CORS!
-    const formData = new FormData();
-    formData.append('name', data.name);
-    formData.append('transport', data.transport);
-    formData.append('allergies', data.allergies);
-    formData.append('alcohol', data.alcohol.join(', ')); // Prevod array na string
-    formData.append('message', data.message);
-    formData.append('timestamp', data.timestamp);
-    formData.append('weddingRSVP', 'true'); // Identifikátor pre Apps Script
+    const response = {
+        timestamp,
+        ...formData
+    };
     
-    // Odoslanie údajov ako FormData (bez CORS problémov!)
-    fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(result => {
-        console.log('✓ Údaje boli odoslané a uložené!', result);
-    })
-    .catch(error => {
-        console.error('✗ Chyba pri odosielaní:', error);
-        showErrorMessage('Chyba pri odosielaní. Prosím, skúste neskôr.');
-    });
+    responses.push(response);
+    localStorage.setItem('questionnaire_responses', JSON.stringify(responses));
+    
+    console.log('Dotazník uložený:', response);
 }
 
 /**
  * Zobrazenie správy o úspechu
  */
 function displaySuccessMessage() {
+    const container = document.querySelector('.questionnaire-section');
+    
+    const successDiv = document.createElement('div');
+    successDiv.className = 'success-message';
+    successDiv.innerHTML = `
+        <p>✓ Ďakujeme za vyplnenie dotazníka!</p>
+        <p>Veľmi sa tešíme na vašu účasť.</p>
+    `;
+    
+    // Vloženie správy za formulár
     const form = document.getElementById('rsvpForm');
-    const successMsg = document.getElementById('successMessage');
+    form.parentNode.insertBefore(successDiv, form.nextSibling);
     
-    // Skrytie formuláru
-    form.style.display = 'none';
-    
-    // Zobrazenie správy
-    successMsg.style.display = 'block';
-    
-    // Animácia появления
-    successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Automatické skrytie
+    setTimeout(function() {
+        successDiv.style.opacity = '0';
+        successDiv.style.transition = 'opacity 0.5s ease';
+    }, 2000);
 }
 
 /**
  * Zobrazenie chybovej správy
- * @param {string} message - Text chybovej správy
+ * @param {string} message - Chybová správa
  */
 function showErrorMessage(message) {
-    // Získanie formuláru a vytvorenie chybovej správy
-    const form = document.getElementById('rsvpForm');
-    
-    // Odstránenie starej chybovej správy ak existuje
-    const oldError = form.querySelector('.error-message');
-    if (oldError) {
-        oldError.remove();
-    }
-    
-    // Vytvorenie novej chybovej správy
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'error-message';
-    errorDiv.textContent = '✗ ' + message;
-    errorDiv.style.cssText = `
-        background-color: #ffebee;
-        border: 1px solid #ef5350;
-        border-radius: 5px;
-        padding: 15px;
-        color: #c62828;
-        margin-bottom: 20px;
-        font-weight: 500;
-    `;
-    
-    // Vloženie chybovej správy na začiatok formuláru
-    form.insertBefore(errorDiv, form.firstChild);
-    
-    // Automatické skrytie po 4 sekundách
-    setTimeout(function() {
-        errorDiv.remove();
-    }, 4000);
-}
-
-/**
- * Funkcia na zobrazenie všetkých uložených údajov (len pre debug)
- * Spustiť v konzole: showAllSubmissions()
- */
-function showAllSubmissions() {
-    const submissions = JSON.parse(localStorage.getItem('weddingRSVP')) || [];
-    console.log('📋 Všetky podania:', submissions);
-    return submissions;
+    alert(message);
 }
