@@ -83,7 +83,7 @@ function collectFormData() {
     const formData = {};
     
     // Zber mien
-    const namesInput = document.querySelector('input[placeholder="Napíšte mená..."]');
+    const namesInput = document.getElementById('namesInput');
     formData.names = namesInput ? namesInput.value.trim() : '';
     
     // Zber transportu
@@ -93,32 +93,46 @@ function collectFormData() {
         .map(cb => cb.value)
         .join(', ') || 'Neuvedené';
     
-    // Zber diety
+    // Zber diety - BEZ "other", vlastný text sa zapíše priamo
     const dietCheckboxes = document.querySelectorAll('input[name="diet"]');
-    formData.diet = Array.from(dietCheckboxes)
-        .filter(cb => cb.checked)
-        .map(cb => cb.value)
-        .join(', ') || 'Bez obmedzení';
+    const dietOtherCheckbox = document.querySelector('input[name="diet"][value="other"]');
+    const dietOtherValue = document.querySelector('.diet-other').value.trim();
     
-    if (document.querySelector('.diet-other').style.display !== 'none') {
-        const dietOtherValue = document.querySelector('.diet-other').value.trim();
-        if (dietOtherValue) {
-            formData.dietOther = dietOtherValue;
+    formData.diet = Array.from(dietCheckboxes)
+        .filter(cb => cb.checked && cb.value !== 'other') // Vylúčiť "other"
+        .map(cb => cb.value)
+        .join(', ');
+    
+    // Pridať vlastný text diéty namiesto "other"
+    if (dietOtherCheckbox && dietOtherCheckbox.checked && dietOtherValue) {
+        if (formData.diet) {
+            formData.diet += ', ' + dietOtherValue;
+        } else {
+            formData.diet = dietOtherValue;
         }
+    } else if (!formData.diet) {
+        formData.diet = 'Bez obmedzení';
     }
     
-    // Zber alkoholu
+    // Zber alkoholu - BEZ "other", vlastný text sa zapíše priamo
     const alcoholCheckboxes = document.querySelectorAll('input[name="alcohol"]');
-    formData.alcohol = Array.from(alcoholCheckboxes)
-        .filter(cb => cb.checked)
-        .map(cb => cb.value)
-        .join(', ') || 'Neuvedené';
+    const alcoholOtherCheckbox = document.querySelector('input[name="alcohol"][value="other"]');
+    const alcoholOtherValue = document.querySelector('.alcohol-other').value.trim();
     
-    if (document.querySelector('.alcohol-other').style.display !== 'none') {
-        const alcoholOtherValue = document.querySelector('.alcohol-other').value.trim();
-        if (alcoholOtherValue) {
-            formData.alcoholOther = alcoholOtherValue;
+    formData.alcohol = Array.from(alcoholCheckboxes)
+        .filter(cb => cb.checked && cb.value !== 'other') // Vylúčiť "other"
+        .map(cb => cb.value)
+        .join(', ');
+    
+    // Pridať vlastný text alkoholu namiesto "other"
+    if (alcoholOtherCheckbox && alcoholOtherCheckbox.checked && alcoholOtherValue) {
+        if (formData.alcohol) {
+            formData.alcohol += ', ' + alcoholOtherValue;
+        } else {
+            formData.alcohol = alcoholOtherValue;
         }
+    } else if (!formData.alcohol) {
+        formData.alcohol = 'Neuvedené';
     }
     
     // Zber bonusu
@@ -150,19 +164,15 @@ function saveFormData(formData) {
     // ⚠️ ZMEŇ TÚTO URL NA SVOJU Z GOOGLE APPS SCRIPT DEPLOYMENT
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwlEKpeOf_0uk2IgtL9S-YKWK85yJi6tFJUWJTOaF2lBRAUCg2Y6IZNCtLfEKTinq8/exec";
     
-    // Vytvorenie FormData (nie JSON!) - toto obchádza CORS!
+    // Vytvorenie FormData s SPRÁVNYMI NÁZVAMI pre Google Apps Script
     const formDataToSend = new FormData();
-    formDataToSend.append('names', formData.names);
+    formDataToSend.append('name', formData.names);
     formDataToSend.append('transport', formData.transport);
-    formDataToSend.append('diet', formData.diet);
-    if (formData.dietOther) {
-        formDataToSend.append('dietOther', formData.dietOther);
-    }
+    formDataToSend.append('allergies', formData.diet);
     formDataToSend.append('alcohol', formData.alcohol);
-    if (formData.alcoholOther) {
-        formDataToSend.append('alcoholOther', formData.alcoholOther);
-    }
-    formDataToSend.append('bonus', formData.bonus);
+    formDataToSend.append('message', formData.bonus);
+    
+    // Timestamp a indikátor RSVP
     formDataToSend.append('timestamp', new Date().toLocaleString('sk-SK'));
     formDataToSend.append('weddingRSVP', 'true');
     
