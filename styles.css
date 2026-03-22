@@ -202,6 +202,47 @@ body {
     margin-left: 32px;
 }
 
+.checkbox-label input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    cursor: pointer;
+    accent-color: #d4839a;
+    border-radius: 50%;
+}
+
+.form-label {
+    display: block;
+    color: #555;
+    font-size: 1em;
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+.form-label input[type="number"] {
+    width: 80px;
+    margin-left: 10px;
+    padding: 8px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 0.95em;
+    transition: all 0.3s ease;
+}
+
+.form-label input[type="number"]:focus {
+    outline: none;
+    border-color: #d4839a;
+    box-shadow: 0 0 8px rgba(212, 131, 154, 0.2);
+}
+
+.transport-options,
+.transport-type-options {
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 6px;
+    border-left: 3px solid #d4839a;
+}
+
 /* ============================================
    INFO KARTY
    ============================================ */

@@ -23,6 +23,31 @@ function initializeForm() {
  * Nastavenie dynamických vstupov (zobrazenie/skrytie)
  */
 function setupDynamicInputs() {
+    // Zobrazenie/skrytie služby pre transport
+    const transportYes = document.getElementById('transportYes');
+    const transportNo = document.getElementById('transportNo');
+    const transportOptions = document.querySelector('.transport-options');
+    const transportTypeOptions = document.querySelector('.transport-type-options');
+    
+    if (transportYes && transportNo) {
+        const updateTransportVisibility = function() {
+            if (transportYes.checked) {
+                transportOptions.style.display = 'block';
+                transportTypeOptions.style.display = 'block';
+            } else {
+                transportOptions.style.display = 'none';
+                transportTypeOptions.style.display = 'none';
+                // Resetuj hodnoty
+                document.querySelector('.transport-people').value = '1';
+                document.querySelectorAll('input[name="transportType"]').forEach(r => r.checked = false);
+            }
+        };
+        
+        transportYes.addEventListener('change', updateTransportVisibility);
+        transportNo.addEventListener('change', updateTransportVisibility);
+    }
+    
+    
     // Zobrazenie iného inputu pre dietu
     const dietOtherCheckbox = document.querySelector('input[name="diet"][value="other"]');
     const dietOtherInput = document.querySelector('.diet-other');
@@ -87,11 +112,22 @@ function collectFormData() {
     formData.names = namesInput ? namesInput.value.trim() : '';
     
     // Zber transportu
-    const transportCheckboxes = document.querySelectorAll('input[name="transport"]');
-    formData.transport = Array.from(transportCheckboxes)
-        .filter(cb => cb.checked)
-        .map(cb => cb.value)
-        .join(', ') || 'Neuvedené';
+    const transportYes = document.getElementById('transportYes');
+    const transportPeople = document.querySelector('.transport-people');
+    const transportTypeRadios = document.querySelectorAll('input[name="transportType"]:checked');
+    
+    if (transportYes && transportYes.checked) {
+        const peopleCount = transportPeople ? transportPeople.value : '1';
+        const transportType = transportTypeRadios.length > 0 ? transportTypeRadios[0].value : '';
+        
+        let transportText = `Áno - ${peopleCount} ${peopleCount == 1 ? 'osoba' : 'ľudí'}`;
+        if (transportType) {
+            transportText += ` (${transportType})`;
+        }
+        formData.transport = transportText;
+    } else {
+        formData.transport = 'Nie';
+    }
     
     // Zber diety - BEZ "other", vlastný text sa zapíše priamo
     const dietCheckboxes = document.querySelectorAll('input[name="diet"]');

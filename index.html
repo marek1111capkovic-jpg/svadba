@@ -41,13 +41,39 @@
                 <p class="form-subtitle">Budete potrebovať zabezpečiť odvoz na miesto hostiny?</p>
                 <div class="checkbox-group">
                     <label class="checkbox-label">
-                        <input type="checkbox" name="transport" value="yes">
+                        <input type="radio" name="transport" value="yes" id="transportYes">
                         <span>Áno</span>
                     </label>
                     <label class="checkbox-label">
-                        <input type="checkbox" name="transport" value="no">
+                        <input type="radio" name="transport" value="no" id="transportNo">
                         <span>Nie</span>
                     </label>
+                </div>
+
+                <!-- Skryté možnosti pre odvoz - Počet ľudí -->
+                <div class="transport-options" style="display: none; margin-top: 20px;">
+                    <label class="form-label">Počet ľudí, ktorí potrebujú odvoz:
+                        <input type="number" class="transport-people" min="1" max="20" placeholder="Počet" value="1">
+                    </label>
+                </div>
+
+                <!-- Skryté možnosti pre odvoz - Typ transportu -->
+                <div class="transport-type-options" style="display: none; margin-top: 15px;">
+                    <p class="form-subtitle" style="margin-bottom: 10px;">Možnosti odvozu:</p>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="radio" name="transportType" value="na-hostinu">
+                            <span>Iba na hostinu</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="radio" name="transportType" value="z-hostiny">
+                            <span>Iba z hostiny</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="radio" name="transportType" value="oboje">
+                            <span>Na a z hostiny (oboje)</span>
+                        </label>
+                    </div>
                 </div>
             </div>
 
